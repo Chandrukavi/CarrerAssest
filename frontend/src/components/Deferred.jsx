@@ -1,0 +1,50 @@
+import TaskCard from "./TaskCard";
+import axios from 'axios';
+import  { useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
+
+
+const Deferred = () => {
+    const [deferredTasks, setDeferredTasks] = useState([]);
+
+    useEffect(() => {
+      const fetchDeferredTasks = async () => {
+        const response = await axios.get('http://localhost:5000/api/tasks');
+        const Deferred = response.data.filter((task) => task.status === 'Deferred');
+        setDeferredTasks(Deferred);
+      };
+      fetchDeferredTasks();
+    }, []);
+ 
+
+
+  return (
+      <div className="w-[70%] mx-auto">
+          <div className="mt-10">
+              <h1 className="text-3xl font-bold my-8 text-center">Deferred Tasks</h1>
+          </div>
+          {
+              deferredTasks.length > 0 ? (
+                  <div className="flex flex-wrap gap-y-4 gap-x-14 overflow-y-scroll mt-5 h-[50vh] sm:h-[80vh] justify-center">
+                      {deferredTasks.map(task => (
+                          <TaskCard
+                              key={task.id}
+                              title={task.title}
+                              description={task.description}
+                              startDate={task.startDate}
+                              endDate={task.endDate}
+                              status={task.status}
+                              assignee={task.assignee}
+                              priority={task.priority}
+                          />
+                      ))}
+                  </div>
+              ) : (<div className="text-center mt-[17vh] sm:mt-[30vh]">
+                  <p>No tasks found. <Link to="/addTask" className="text-indigo-500">Add a new task</Link></p>
+              </div >)
+          }
+      </div>
+  )
+}
+
+export default Deferred
